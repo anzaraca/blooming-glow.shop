@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blooming Glow Online Shop (simulación)</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        header, footer { background-color: #f9c5e3; padding: 10px; text-align: center; }
+        section { margin: 20px 0; }
+        .producto { border: 1px solid #000000; background-color: #e19df4; padding: 10px; margin: 10px; display: inline-block; width: 200px; }
+        #carrito { border: 1px solid #000000; background-color: #b2c9f0; padding: 10px; }
+        button { border: 1px solid #000000; background-color: #3c9c66; color: white; padding: 5px 10px; cursor: pointer; }
+        select { padding: 5px; margin: 5px 0; }
+        input { padding: 5px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="banner.png" alt="Banner" width="1300" height="500">
+    </header>
+
+    <!-- Secciones Informativas -->
+    <section id="productos">
+        <h2>Productos Disponibles</h2>
+        <p>Bienvenido a nuestra tienda online. Aquí encontrarás una variedad de jabones.</p>
+        <div class="producto">
+            <img src="jabon40gr.png" alt="Jabón masajeador" width="192" height="300">
+            <h3>Jabón masajeador exfoliante 40 gr.</h3>
+            <p2>Con semillas de linaza y aroma a gardenia, su forma brinda un relajante masaje</p2>
+            <p>Precio: $20</p>
+            <button onclick="agregarAlCarrito('Jabón exfoliante', 20)">Agregar al Carrito</button>
+        </div>
+        <div class="producto">
+            <img src="jabon60gr.png" alt="Jabón limpieza suave 60" width="192" height="300">
+            <h3>Jabón de limpieza suave 60 gr.</h3>
+            <p2>Con flores secas de violeta y aroma a gardenia de larga duración</p2>
+            <p>Precio: $25</p>
+            <button onclick="agregarAlCarrito('Jabón 60 gr.', 25)">Agregar al Carrito</button>
+        </div>
+        <div class="producto">
+            <img src="jabon80gr.png" alt="Jabón limpieza suave 80" width="192" height="300">
+            <h3>Jabón de limpieza suave 80 gr.</h3>
+            <p2>Con flores secas de violeta y aroma a gardenia de larga duración</p2>
+            <p>Precio: $30</p>
+            <button onclick="agregarAlCarrito('Jabón 80 gr.', 30)">Agregar al Carrito</button>
+        </div>
+    </section>
+
+    <!-- Carrito de Compras Simulado -->
+    <section id="carrito">
+        <h2>Carrito de Compras</h2>
+        <ul id="lista-carrito"></ul>
+        <p>Subtotal productos: $<span id="subtotal">0</span></p>
+        <label for="entrega">Método de Entrega:</label>
+        <select id="entrega" onchange="actualizarTotal()">
+            <option value="0">Selecciona entrega</option>
+            <option value="50">Envío estándar (3-5 días) - $50</option>
+            <option value="80">Envío express (1-2 días) - $80</option>
+            <option value="15">Recoger en punto medio $15</option>
+        </select>
+        <label for="pago">Método de Pago:</label>
+        <select id="pago" onchange="actualizarTotal()">
+            <option value="0">Selecciona tu método de pago</option>
+            <option value="1">Transferencia bancaria</option>
+            <option value="1">Pago en efectivo contra entrega</option>
+        </select>
+        <p>Total final: $<span id="total">0</span></p>
+        <div id="datos-cliente" style="display: none;">
+            <h3>Datos del Cliente</h3>
+            <label for="nombre">Nombre completo:</label>
+            <input type="text" id="nombre" required>
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" required>
+            <label for="email">Correo electrónico:</label>
+            <input type="email" id="email" required>
+        </div>
+        <button onclick="realizarCompra()">Realizar Compra</button>
+        <button onclick="vaciarCarrito()">Vaciar Carrito</button>
+    </section>
+
+    <!-- Enlaces a Redes Sociales -->
+    <footer>
+        <h2>Síguenos en Redes Sociales</h2>
+        <a href="https://www.facebook.com/people/Blooming-Glow/61584786513989/" target="_blank">Facebook</a> | 
+        <a href="https://x.com/bloominglow_" target="_blank">X</a> |
+        <a href="https://www.tiktok.com/@bloominglow_" target="_blank">TikTok</a> |
+        <p>&copy; 2025 Blooming Glow.</p>
+    </footer>
+
+    <script>
+        let carrito = [];
+        let subtotal = 0;
+
+        function agregarAlCarrito(producto, precio) {
+            carrito.push({ nombre: producto, precio: precio });
+            subtotal += precio;
+            actualizarCarrito();
+        }
+
+        function vaciarCarrito() {
+            carrito = [];
+            subtotal = 0;
+            document.getElementById('entrega').value = '0';
+            document.getElementById('pago').value = '0';
+            actualizarCarrito();
+        }
+
+        function actualizarCarrito() {
+            const lista = document.getElementById('lista-carrito');
+            lista.innerHTML = '';
+            carrito.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${item.nombre} - $${item.precio}`;
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Eliminar del Carrito';
+                removeButton.onclick = () => eliminarDelCarrito(index);
+                li.appendChild(removeButton);
+                lista.appendChild(li);
+            });
+            document.getElementById('subtotal').textContent = subtotal;
+            actualizarTotal();
+        }
+
+        function eliminarDelCarrito(index) {
+            const item = carrito.splice(index, 1)[0];
+            subtotal -= item.precio;
+            actualizarCarrito();
+        }
+
+        function actualizarTotal() {
+            const envioCosto = parseFloat(document.getElementById('entrega').value) || 0;
+            const total = subtotal + envioCosto;
+            document.getElementById('total').textContent = total;
+            mostrarDatosCliente();
+        }
+
+        function mostrarDatosCliente() {
+            const pagoSelect = document.getElementById('pago');
+            const datosCliente = document.getElementById('datos-cliente');
+            if (pagoSelect.value !== '0') {
+                datosCliente.style.display = 'block';
+            }
+            else {
+                datosCliente.style.display = 'none';
+            }
+        }
+
+        function realizarCompra() {
+            const nombre = document.getElementById('nombre').value;
+            const telefono = document.getElementById('telefono').value;
+            const email = document.getElementById('email').value;
+            const pagoSelect = document.getElementById('pago');
+            if (carrito.length === 0) {
+                alert('El carrito está vacío.');
+                return;
+            }
+            if (pagoSelect.value === '0') {
+                alert('Selecciona un método de pago.');
+                return;
+            }
+            if (entrega.value === '0') {
+                alert('Selecciona un método de entrega.');
+                return;
+            }
+            if (!nombre || !telefono || !email) {
+                alert('Por favor, ingresa todos los datos del cliente.');
+                return;
+            }
+            alert(`¡Gracias por tu preferencia! Tu compra fue realizada con éxito. Se enviará un mensaje de confirmación con instrucciones para el pago al correo proporcionado. Esto podría tomar algunos minutos.`);
+            vaciarCarrito();
+        }
+    </script>
+</body>
+</html>
