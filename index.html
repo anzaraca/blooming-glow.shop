@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init({
+                publicKey: "Bh5wfW1-LPSgDROKZ",
+            });
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blooming Glow Online Shop (simulación)</title>
@@ -75,7 +83,7 @@
             <label for="email">Correo electrónico:</label>
             <input type="email" id="email" required>
         </div>
-        <button onclick="realizarCompra()">Realizar Compra</button>
+        <button onclick="realizarCompra(); sendOrderConfirmation();">Realizar Compra</button>
         <button onclick="vaciarCarrito()">Vaciar Carrito</button>
     </section>
 
@@ -140,8 +148,7 @@
             const datosCliente = document.getElementById('datos-cliente');
             if (pagoSelect.value !== '0') {
                 datosCliente.style.display = 'block';
-            }
-            else {
+            } else {
                 datosCliente.style.display = 'none';
             }
         }
@@ -163,8 +170,47 @@
                 alert('Por favor, ingresa todos los datos del cliente.');
                 return;
             }
-            alert(`¡Gracias por tu preferencia! Tu compra fue realizada con éxito. Se enviará un mensaje de confirmación con instrucciones para el pago al correo proporcionado. Esto podría tomar algunos minutos.`);
+            alert(`¡Gracias por tu preferencia! Tu compra fue realizada con éxito.`);
+            return;
             vaciarCarrito();
+        }
+
+        function sendOrderConfirmation() {
+            // Obtener datos del cliente
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const telefono = document.getElementById('telefono').value;
+
+            // Validar que los datos estén llenos
+            if (!nombre || !email || !telefono) {
+                alert('Por favor, ingresa todos los datos del cliente antes de enviar el correo.');
+                return;
+            }
+
+            // Obtener subtotal, envío y total correctamente
+            const subtotal = document.getElementById('subtotal').textContent;
+            const envio = document.getElementById('entrega').textContent;  // Valor del select (costo de envío)
+            const total = document.getElementById('total').textContent;
+
+            // Parámetros para la plantilla (ajusta las variables según tu plantilla en EmailJS)
+            const templateParams = {
+                nombre: nombre,  // Nombre del cliente
+                email: email,    // Correo del cliente (para envío)
+                telefono: telefono,  // Teléfono
+                subtotal: subtotal,  // Subtotal
+                envio: entrega,  // Costo de envío
+                total: total    // Total final
+            };
+
+            // Enviar correo
+            emailjs.send("bloominglow_", "template_rx6mdhp", templateParams)
+                .then(function(response) {
+                    console.log("Correo enviado:", response);
+                    alert("Se enviará un mensaje de confirmación con instrucciones para el pago al correo proporcionado. Esto podría tomar algunos minutos.");
+                }, function(error) {
+                    console.log("Error:", error);
+                    alert("Error al enviar el correo. Revisa la consola para más detalles.");
+                });
         }
     </script>
 </body>
